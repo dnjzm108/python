@@ -2,11 +2,13 @@
 
 from random import *
 from math import *
+
 print(abs(-5))  # 절대값 5
 print(pow(4, 2))  # 4^2 = 4*4 = 16
 print(max(4, 2))  # 최대값 4
 print(min(4, 2))  # 최소값 2
 print(round(3.15))  # 반올림 3
+
 
 # 라이브러리 불러오기
 # math
