@@ -66,6 +66,61 @@ import numpy as np
 # cv2.destroyAllWindows()
 
 
+
+# # 포인트 지점 연결하는 선 긋기
+
+# point_list = []
+# src_img = cv2.imread('../img/poker.jpg')
+# COLOR = (255, 0, 255)  # 핑크
+# THICKNESS = 3
+# drawing = False  # 선을 그릴지 여부
+
+
+# def mouse_handler(event, x, y, flags, param):
+#     global drawing
+#     if event == cv2.EVENT_LBUTTONDOWN:  # 마우스 왼쪽 버튼 DOWN
+#        drawing = True  # 선을 그리기 시작
+#        point_list.append((x, y))
+
+#     if drawing:
+#         prev_point = None  # 직선의 시작점
+#         for point in point_list:
+#             cv2.circle(src_img, point, 15, COLOR, cv2.FILLED)
+#             if prev_point:
+#                 cv2.line(src_img, prev_point, point,
+#                          COLOR, THICKNESS, cv2.LINE_AA)
+#             prev_point = point
+
+#     for point in point_list:
+#         cv2.circle(src_img, point, 10, COLOR, cv2.FILLED)
+
+#     if len(point_list) == 4:
+#         show_result()  # 결과 출력
+#     cv2.imshow('img', src_img)
+
+
+# def show_result():
+#     width, height = 530, 710
+#     src = np.float32(point_list)
+#     dst = np.array([[0, 0], [width, 0], [width, height], [
+#                    0, height]], dtype=np.float32)  # Output 4개 지점
+
+#     matrix = cv2.getPerspectiveTransform(src, dst)  # Matric 얻어옴
+#     result = cv2.warpPerspective(
+#         src_img, matrix, (width, height))  # matrix대로 변환을 함
+#     cv2.imshow('result', result)
+
+
+# cv2.namedWindow('img')
+# cv2.setMouseCallback('img', mouse_handler)
+# cv2.imshow('img', src_img)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+
+
+# 실시간 선긋기
+
 point_list = []
 src_img = cv2.imread('../img/poker.jpg')
 COLOR = (255, 0, 255)  # 핑크
@@ -75,6 +130,8 @@ drawing = False  # 선을 그릴지 여부
 
 def mouse_handler(event, x, y, flags, param):
     global drawing
+    dst_img = src_img.copy()
+
     if event == cv2.EVENT_LBUTTONDOWN:  # 마우스 왼쪽 버튼 DOWN
        drawing = True  # 선을 그리기 시작
        point_list.append((x, y))
@@ -82,18 +139,22 @@ def mouse_handler(event, x, y, flags, param):
     if drawing:
         prev_point = None  # 직선의 시작점
         for point in point_list:
-            cv2.circle(src_img, point, 15, COLOR, cv2.FILLED)
+            cv2.circle(dst_img, point, 15, COLOR, cv2.FILLED)
             if prev_point:
-                cv2.line(src_img, prev_point, point,
-                         COLOR, THICKNESS, cv2.LINE_AA)
+                cv2.line(src_img, prev_point, point,COLOR, THICKNESS, cv2.LINE_AA)
             prev_point = point
-            
-    for point in point_list:
-        cv2.circle(src_img, point, 10, COLOR, cv2.FILLED)
 
-    if len(point_list) == 4:
-        show_result()  # 결과 출력
-    cv2.imshow('img', src_img)
+    for point in point_list:
+        cv2.circle(dst_img, point, 10, COLOR, cv2.FILLED)
+
+        next_point = (x,y)
+        if len(point_list) == 4:
+            show_result() 
+            next_point = point_list[0] #첫 번째 클릭한 지점
+        cv2.line(dst_img, prev_point, next_point,COLOR, THICKNESS, cv2.LINE_AA)
+
+
+    cv2.imshow('img', dst_img)
 
 
 def show_result():
@@ -113,3 +174,6 @@ cv2.setMouseCallback('img', mouse_handler)
 cv2.imshow('img', src_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+
+
