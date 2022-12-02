@@ -41,7 +41,7 @@ width = round(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = round(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = cap.get(cv2.CAP_PROP_FPS)
 
-out = cv2.VideoWriter('cat_mission.mp4',fourcc,fps*4,(height,width))
+out = cv2.VideoWriter('../movie/cat_mission.mp4',fourcc,fps*4,(height,width))
 
 while cap.isOpened():
     ret,frame = cap.read()

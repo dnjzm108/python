@@ -131,7 +131,8 @@ def overlay(image, x, y, w, h, over_image):  # 대상이미지,x,y좌표,width,h
     mask_image = alpha/255  # 0 ~ 255 -> 255 로 나누면  0~ 1 사이의 값 (1:불투명,0:완전)
 
     for c in list(range(0, 3)):  # channel BGR
-        image[y-h:y+h, x-w:x+w, c] = (over_image[:, :, c] * mask_image) + (image[y-h:y+h, x-w:x+w, c] * (1 - mask_image))
+        image[y-h:y+h, x-w:x+w, c] = (over_image[:, :, c] * mask_image) + \
+            (image[y-h:y+h, x-w:x+w, c] * (1 - mask_image))
 
 
 mp_face_detection = mp.solutions.face_detection  # 얼굴 검출을 위한 face_detection 모듈을 사용
