@@ -153,7 +153,25 @@ import pandas as pd
 
 df = pd.read_csv('https://bit.ly/perch_csv')
 perch_full = df.to_numpy()
-print(perch_full)
+# print(perch_full)
+
+perch_full = np.array(perch_full)
+# print(len(perch_full))
+
+# 리스트 합치기 길이 와 높이 
+perch_input = np.column_stack((perch_full[:,0] , perch_full[:,1]))
+# 두께
+perch_data = perch_full[:,2]
+
+# print(perch_input)
+# print(perch_data)
+
+train_input,test_input,train_target,test_target = train_test_split(perch_input,perch_data,random_state=42)
+print('train_input :',train_input)
+print('test_input : ',test_input)
+print('train_target : ',train_target)
+print('test_target : ',test_target)
+
 # 길이 높이 두께
 
 # 다항 특성 만들기 
@@ -179,13 +197,101 @@ poly.get_feature_names()
 
 test_poly = poly.transform(test_input)
 
+from sklearn.linear_model import LinearRegression
 
+lr = LinearRegression()
+lr.fit(train_poly,train_target)
 
+print(lr.score(train_poly,train_target))
 
+print(lr.score(test_poly,test_target))
 
+# 더 많은 특성 만들기
 
+poly = PolynomialFeatures(degree=5,include_bias=False)
 
+poly.fit(train_input)
+train_poly = poly.transform(train_input)
+test_poly = poly.transform(test_input)
 
+print(train_poly.shape)
+
+lr.fit(train_poly,train_target)
+
+print(lr.score(train_poly,train_target))
+
+print(lr.score(test_poly,test_target))
+
+# 규제 전에 표준화
+
+from sklearn.preprocessing import StandardScaler
+
+ss = StandardScaler()
+ss.fit(train_poly)
+
+train_scaled = ss.transform(train_poly)
+test_scaled = ss.transform(test_poly)
+
+print(train_scaled)
+print(test_scaled)
+
+# 릿지 회귀
+
+from sklearn.linear_model import Ridge
+
+ridge = Ridge()
+ridge.fit(train_scaled,train_target)
+
+print(ridge.score(train_scaled,train_target))
+
+print(ridge.score(test_scaled,test_target))
+
+# 적절한 규제 강도 찾기
+
+alpha_list = [0.001,0.01,0.1,1,10,100]
+train_score=[]
+test_score=[]
+for alpha in alpha_list:
+  # 릿지 모델을 만듭니다.
+  ridge = Ridge(alpha=alpha)
+  # 릿지 모델을 훈련합니다.
+  ridge.fit(train_scaled,train_target)
+  # 훈련 점수와 테스트 점수를 저장합니다.
+  train_score.append(ridge.score(train_scaled,train_target))
+  test_score.append(ridge.score(test_scaled,test_target))
+
+plt.plot(np.log10(alpha_list),train_score)
+plt.plot(np.log10(alpha_list),test_score)
+plt.xlabel('alpha')
+plt.ylabel('R^2')
+plt.show()
+
+ridge = Ridge(alpha =0.1)
+ridge.fit(train_scaled,train_target)
+
+print(ridge.score(train_scaled,train_target))
+
+print(ridge.score(test_scaled,test_target))
+
+# 라쏘 회귀
+
+from sklearn.linear_model import Lasso
+
+lasso = Lasso()
+lasso.fit(train_scaled,train_target)
+
+print(lasso.score(train_scaled,train_target))
+
+print(lasso.score(test_scaled,test_target))
+
+lass = Lasso(alpha=10)
+lasso.fit(train_scaled,train_target)
+
+print(lasso.score(train_scaled,train_target))
+
+print(lasso.score(test_scaled,test_target))
+
+print(np.sum(lasso.coef_ == 0))
 
 
 
